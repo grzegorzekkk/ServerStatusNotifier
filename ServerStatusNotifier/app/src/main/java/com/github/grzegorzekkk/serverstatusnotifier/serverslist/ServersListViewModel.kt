@@ -17,6 +17,12 @@ class ServersListViewModel : ViewModel(), LoadSavedServersTask.OnLoadSavedServer
         serversLiveData.value = list?.toList()
     }
 
+    fun deleteServer(server: ServerDetails) {
+        val list = serversLiveData.value?.toMutableList()
+        list?.remove(server)
+        serversLiveData.value = list?.toList()
+    }
+
     override fun onLoadSavedServers(serverDetailsList: List<ServerDetails>) {
         serversLiveData.value = serverDetailsList
     }

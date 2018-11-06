@@ -18,4 +18,7 @@
     <string name="details_player_count">Online players:</string>
     <string name="value_of_format">%s / %s</string>
     <string name="server_version">Server version:</string>
+    <string name="dialog_delete_ask">Are you sure to delete this server from the list?</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
 </resources>

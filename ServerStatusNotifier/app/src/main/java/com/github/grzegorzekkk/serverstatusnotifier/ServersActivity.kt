@@ -25,13 +25,14 @@ import com.github.grzegorzekkk.serverstatusnotifier.serverslist.ServerStatusAdap
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.ServersListViewModel
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.dialog.AboutDialog
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.dialog.AddServerDialog
+import com.github.grzegorzekkk.serverstatusnotifier.serverslist.dialog.DeleteServerDialog
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.AddNewServerTask
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 import kotlinx.android.synthetic.main.activity_servers.*
 
 
-class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddListener {
+class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddListener, DeleteServerDialog.OnServerDeleteListener {
     private lateinit var serversViewModel: ServersListViewModel
     private lateinit var serverStatusAdapter: ServerStatusAdapter
     private lateinit var mJobScheduler: JobScheduler
@@ -54,7 +55,7 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
         serversViewModel = ViewModelProviders.of(this).get(ServersListViewModel::class.java)
         serversViewModel.serversList().observe(this, Observer(this::updateServersList))
 
-        serverStatusAdapter = ServerStatusAdapter(emptyList(), this::startDetailsActivity)
+        serverStatusAdapter = ServerStatusAdapter(emptyList(), this::startDetailsActivity, this::showDeleteServerDialog)
         serverItemRecyclerView.layoutManager = LinearLayoutManager(this)
         serverItemRecyclerView.adapter = serverStatusAdapter
 
@@ -104,6 +105,11 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
         }
     }
 
+    override fun onServerDelete(server: ServerDetails) {
+        dbHelper.deleteServer(server.connDetails)
+        serversViewModel.deleteServer(server)
+    }
+
     override fun onTimeout() {
         Toast.makeText(this, R.string.conn_server_timeout, Toast.LENGTH_LONG).show()
     }
@@ -131,13 +137,19 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
 
     private fun showAboutDialog(): Boolean {
         val dialog = AboutDialog()
-        dialog.show(supportFragmentManager, "dialog")
+        dialog.show(supportFragmentManager, DIALOG_STRING)
         return true
     }
 
     private fun showAddServerDialog() {
         val dialog = AddServerDialog()
-        dialog.show(supportFragmentManager, "dialog")
+        dialog.show(supportFragmentManager, DIALOG_STRING)
+    }
+
+    private fun showDeleteServerDialog(server: ServerDetails) {
+        val dialog = DeleteServerDialog()
+        dialog.serverDetails = server
+        dialog.show(supportFragmentManager, DIALOG_STRING)
     }
 
     private fun startBackgroundServerChecker() {
@@ -153,5 +165,9 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
         if (mJobScheduler.schedule(builder.build()) <= 0) {
             //If something goes wrong
         }
+    }
+
+    companion object {
+        const val DIALOG_STRING = "dialog"
     }
 }

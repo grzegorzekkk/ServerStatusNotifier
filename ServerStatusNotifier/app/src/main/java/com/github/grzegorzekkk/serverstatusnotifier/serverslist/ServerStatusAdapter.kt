@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import com.github.grzegorzekkk.serverstatusnotifier.R.layout.server_status
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 
-open class ServerStatusAdapter(var servers: List<ServerDetails>, private val onItemClicked: (ServerDetails) -> Unit) : RecyclerView.Adapter<ServerStatusViewHolder>() {
+open class ServerStatusAdapter(var servers: List<ServerDetails>, private val onDetailsClicked: (ServerDetails) -> Unit, private val onDeleteClicked: (ServerDetails) -> Unit) : RecyclerView.Adapter<ServerStatusViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServerStatusViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(server_status, parent, false)
         return ServerStatusViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ServerStatusViewHolder, position: Int) = holder.bindItem(servers[position], onItemClicked)
+    override fun onBindViewHolder(holder: ServerStatusViewHolder, position: Int) = holder.bindItem(servers[position], onDetailsClicked, onDeleteClicked)
 
     override fun getItemCount(): Int = servers.size
 }

@@ -48,6 +48,14 @@ class SrvConnDetailsDbHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val newRowId = db?.insert(SrvConnDetailsContract.ConnectionDetailsEntry.TABLE_NAME, null, values)
     }
 
+    fun deleteServer(srvConnDetails: SrvConnDetails) {
+        val db = writableDatabase
+
+        val selection = "${SrvConnDetailsContract.ConnectionDetailsEntry.COLUMN_NAME_ADDRESS} LIKE ?"
+        val selectionArgs = arrayOf(srvConnDetails.address)
+        val deletedRows = db.delete(SrvConnDetailsContract.ConnectionDetailsEntry.TABLE_NAME, selection, selectionArgs)
+    }
+
     companion object {
         // If you change the database schema, you must increment the database version.
         const val DATABASE_VERSION = 1
