@@ -1,0 +1,4 @@
+name: ServerStatusNotifierBukkit
+main: com.github.grzegorzekkk.serverstatusnotifierbukkit.ServerStatusNotifierBukkit
+version: 1.0
+author: grzegorzekkk

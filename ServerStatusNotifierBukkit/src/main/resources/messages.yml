@@ -1,0 +1,9 @@
+header: '============ [PP (premium points)] ============'
+no_permission: '&4You do not have permission to use this command!'
+psc: |-
+  &3If you want to buy pp by PaySafeCard
+  &3type: &c/pp psc <16 digits code>
+  &3i.e &c/pp psc 1234123412341234
+  &c1&3zl = &c100&3pp
+  &3Remember that all cash stored on PIN code
+  &3will be taken

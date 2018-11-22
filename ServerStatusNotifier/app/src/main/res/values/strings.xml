@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ServerStatusNotifier</string>
+    <string name="notif_channel">SSN_CH</string>
+    <string name="action_settings">Settings</string>
+    <string name="conn_server_timeout">Connection to server has timed out. Server is off, does not have installed plugin or typed invalid IP.</string>
+    <string name="invalid_ip">Invalid server address</string>
+    <string name="common_close">Close</string>
+    <string name="common_add">Add</string>
+    <string name="common_online">Online</string>
+    <string name="common_offline">Offline</string>
+    <string name="about_author">Author: grzegorzekkk</string>
+    <string name="server_ip">Server IP</string>
+    <string name="server_ip_hint">IP of spigot server</string>
+    <string name="notifier_port">Notifier port</string>
+    <string name="server_password">Server password</string>
+    <string name="notification_title">Alert! Offline server(s)</string>
+    <string name="notification_description">Notifier has found %s of your servers offline. Tap to open Notifier app.</string>
+</resources>

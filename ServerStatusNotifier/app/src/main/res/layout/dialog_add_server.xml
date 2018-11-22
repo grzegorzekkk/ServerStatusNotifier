@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/plank_background">
+
+    <TextView
+        android:id="@+id/dialogServerIPLabel"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/minecraft"
+        android:text="@string/server_ip"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/dialogServerPasswordLabel"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialogServerPort"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/minecraft"
+        android:text="@string/server_password"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/dialogServerIP"
+        style="@style/Notifier.EditText"
+        android:layout_width="349dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/dialogServerIPLabel"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="3dp"
+        android:ems="10"
+        android:hint="@string/server_ip_hint"
+        android:inputType="textUri"
+        android:textColorHint="@android:color/white"
+        android:textSize="24sp"
+        android:theme="@style/Notifier.EditText" />
+
+    <EditText
+        android:id="@+id/dialogServerPassword"
+        style="@style/Notifier.EditText"
+        android:layout_width="349dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/dialogServerPasswordLabel"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="3dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/dialogServerPortLabel"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialogServerIP"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/minecraft"
+        android:text="@string/notifier_port"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/dialogServerPort"
+        style="@style/Notifier.EditText"
+        android:layout_width="350dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/dialogServerPortLabel"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="3dp"
+        android:ems="10"
+        android:inputType="numberSigned"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialogServerPassword"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="6dp"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/minecraft"
+            android:text="@string/common_add" />
+
+        <Button
+            android:id="@+id/close_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/minecraft"
+            android:text="@string/common_close" />
+
+    </LinearLayout>
+
+</RelativeLayout>

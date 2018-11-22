@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+<item>
+    <bitmap
+        android:src="@drawable/wood_plank"
+        android:tileMode="repeat" />
+</item>
+<item>
+    <shape
+        android:shape="rectangle"
+        android:useLevel="false" >
+        <stroke
+            android:width="3dp"
+            android:color="#666666" />
+
+        <solid android:color="@null" />
+    </shape>
+</item>
+
+</layer-list>
