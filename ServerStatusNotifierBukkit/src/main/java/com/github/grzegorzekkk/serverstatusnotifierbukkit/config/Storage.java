@@ -31,7 +31,8 @@ public abstract class Storage {
 
         // Look for defaults in the jar
         Reader defConfigStream = null;
-        try {defConfigStream = new InputStreamReader(ServerStatusNotifierBukkit.getInstance().getResource(fileName), "UTF8");
+        try {
+            defConfigStream = new InputStreamReader(ServerStatusNotifierBukkit.getInstance().getResource(fileName), "UTF8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -25,7 +25,7 @@ public class SsnJsonMessage<T> {
         return GSON.toJson(this);
     }
 
-    public static <T>SsnJsonMessage fromJsonString(String json, Class<T> clazz) {
+    public static <T> SsnJsonMessage fromJsonString(String json, Class<T> clazz) {
         TypeToken token = TypeToken.getParameterized(SsnJsonMessage.class, clazz);
         return (SsnJsonMessage<T>) GSON.fromJson(json, token.getType());
     }

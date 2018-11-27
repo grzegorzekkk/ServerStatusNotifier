@@ -1,9 +1,7 @@
-header: '============ [PP (premium points)] ============'
+enabled: 'ServerStatusNotifierBukkit has been enabled!'
+disabled: 'ServerStatusNotifierBukkit has been disabled'
+notifier_enabled: 'Started Notifier server on port %s'
+incoming_connection: 'Received incoming connection from address %s'
+password_correct: 'Client provided valid password, sending server data in response'
+password_incorrect: 'Client provided invalid password, server data will not be send'
 no_permission: '&4You do not have permission to use this command!'
-psc: |-
-  &3If you want to buy pp by PaySafeCard
-  &3type: &c/pp psc <16 digits code>
-  &3i.e &c/pp psc 1234123412341234
-  &c1&3zl = &c100&3pp
-  &3Remember that all cash stored on PIN code
-  &3will be taken

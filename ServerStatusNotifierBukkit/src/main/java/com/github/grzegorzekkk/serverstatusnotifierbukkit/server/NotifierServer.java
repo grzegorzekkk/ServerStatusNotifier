@@ -1,9 +1,11 @@
 package com.github.grzegorzekkk.serverstatusnotifierbukkit.server;
 
+import com.github.grzegorzekkk.serverstatusnotifierbukkit.ServerStatusNotifierBukkit;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.PluginConfig;
+import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.Message;
+import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.MessagesConfig;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.model.ServerDetails;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.model.ServerStatus;
-import com.github.grzegorzekkk.serverstatusnotifierbukkit.ServerStatusNotifierBukkit;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.model.SsnJsonMessage;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.utils.ConsoleLogger;
 import lombok.Data;
@@ -25,7 +27,7 @@ public class NotifierServer {
     public NotifierServer(int port) {
         try {
             serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
-            ConsoleLogger.info("Started notifier server on port: " + port);
+            ConsoleLogger.info(String.format(MessagesConfig.getInstance().getMessage(Message.NOTIFIER_ENABLED), port));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,6 +37,8 @@ public class NotifierServer {
         try {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
+                ConsoleLogger.info(String.format(MessagesConfig.getInstance().getMessage(Message.INCOMING_CONN),
+                        clientSocket.getRemoteSocketAddress().toString()));
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -62,11 +66,17 @@ public class NotifierServer {
                 ssnDataResponse.setStatus(SsnJsonMessage.MessageType.DATA_RESPONSE);
 
                 writer.println(ssnDataResponse.toJsonString());
+
+                ConsoleLogger.info(String.format(MessagesConfig.getInstance().getMessage(Message.PASSWORD_CORRECT),
+                        clientSocket.getRemoteSocketAddress().toString()));
             } else {
                 SsnJsonMessage<Object> ssnUnauthResponse = new SsnJsonMessage<>();
                 ssnUnauthResponse.setStatus(SsnJsonMessage.MessageType.UNAUTHORIZED_RESPONSE);
 
                 writer.println(ssnUnauthResponse.toJsonString());
+
+                ConsoleLogger.info(String.format(MessagesConfig.getInstance().getMessage(Message.PASSWORD_INCORRECT),
+                        clientSocket.getRemoteSocketAddress().toString()));
             }
 
             writer.flush();
