@@ -8,13 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.github.grzegorzekkk.serverstatusnotifier.ProgressBarHandler
 import com.github.grzegorzekkk.serverstatusnotifier.R
+import com.github.grzegorzekkk.serverstatusnotifier.ServersActivity
 import com.github.grzegorzekkk.serverstatusnotifier.inputfilters.IntegerRangeInputFilter
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.AddNewServerTask
 import kotlinx.android.synthetic.main.dialog_add_server.*
-import java.lang.ref.WeakReference
 
 class AddServerDialog : DialogFragment() {
+    private lateinit var progressBarHandler: ProgressBarHandler
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.dialog_add_server, container, false)
     }
@@ -32,8 +35,13 @@ class AddServerDialog : DialogFragment() {
                 Toast.makeText(activity, R.string.invalid_ip, Toast.LENGTH_SHORT).show()
             } else {
                 dismiss()
-                val task = AddNewServerTask(WeakReference(context!!))
-                task.execute(dialogServerIP.text.toString(), dialogServerPort.text.toString(), dialogServerPassword.text.toString())
+                if (activity is ServersActivity) {
+                    val serversActivity = activity as ServersActivity
+                    val task = AddNewServerTask(serversActivity)
+                    progressBarHandler = ProgressBarHandler(serversActivity)
+                    task.progressBar = progressBarHandler
+                    task.execute(dialogServerIP.text.toString(), dialogServerPort.text.toString(), dialogServerPassword.text.toString())
+                }
             }
         }
         enableConfirmIfInputNotEmpty()

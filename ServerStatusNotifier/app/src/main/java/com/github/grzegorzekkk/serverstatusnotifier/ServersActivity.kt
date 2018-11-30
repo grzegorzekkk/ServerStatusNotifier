@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -19,6 +20,7 @@ import com.github.grzegorzekkk.serverstatusnotifier.R.layout.activity_servers
 import com.github.grzegorzekkk.serverstatusnotifier.R.menu.menu_servers
 import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetailsDbHelper
 import com.github.grzegorzekkk.serverstatusnotifier.scheduler.ServerAvailabilityChecker
+import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.ServerDetailsActivity
 import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.ServerStatusAdapter
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.ServersListViewModel
@@ -27,20 +29,20 @@ import com.github.grzegorzekkk.serverstatusnotifier.serverslist.dialog.AddServer
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.AddNewServerTask
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
 import kotlinx.android.synthetic.main.activity_servers.*
-import java.lang.ref.WeakReference
 
 
 class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddListener {
-
     private lateinit var serversViewModel: ServersListViewModel
     private lateinit var serverStatusAdapter: ServerStatusAdapter
     private lateinit var mJobScheduler: JobScheduler
+    private lateinit var progressBarHandler: ProgressBarHandler
     private val dbHelper = SrvConnDetailsDbHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activity_servers)
         setSupportActionBar(toolbar)
+        progressBarHandler = ProgressBarHandler(this)
 
         addServerButton.setOnClickListener {
             showAddServerDialog()
@@ -52,12 +54,13 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
         serversViewModel = ViewModelProviders.of(this).get(ServersListViewModel::class.java)
         serversViewModel.serversList().observe(this, Observer(this::updateServersList))
 
-        serverStatusAdapter = ServerStatusAdapter(emptyList(), this::doNothing)
+        serverStatusAdapter = ServerStatusAdapter(emptyList(), this::startDetailsActivity)
         serverItemRecyclerView.layoutManager = LinearLayoutManager(this)
         serverItemRecyclerView.adapter = serverStatusAdapter
 
         val dbServersList = dbHelper.fetchServersFromDb()
-        val loadTask = LoadSavedServersTask(WeakReference(this), serversViewModel)
+        val loadTask = LoadSavedServersTask(serversViewModel)
+        loadTask.progressBar = progressBarHandler
         loadTask.execute(dbServersList)
 
         startBackgroundServerChecker()
@@ -114,13 +117,16 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
     private fun refreshServersList(serversList: List<ServerDetails>) {
         if (serversList.isNotEmpty()) {
             val connDetailsList = serversList.map { it.srvConnDetails }.toList()
-            val loadTask = LoadSavedServersTask(WeakReference(this), serversViewModel)
+            val loadTask = LoadSavedServersTask(serversViewModel)
+            loadTask.progressBar = progressBarHandler
             loadTask.execute(connDetailsList)
         }
     }
 
-    private fun doNothing(server: ServerDetails) {
-        startActivity(intent)
+    private fun startDetailsActivity(server: ServerDetails) {
+        val i = Intent(this, ServerDetailsActivity::class.java)
+                .putExtra(ServerDetails.SERIAL_NAME, server)
+        startActivity(i)
     }
 
     private fun showAboutDialog(): Boolean {

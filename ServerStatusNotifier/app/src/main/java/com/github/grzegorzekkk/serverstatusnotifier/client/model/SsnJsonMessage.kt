@@ -20,7 +20,7 @@ class SsnJsonMessage<T>(statusArg: MessageType = MessageType.AUTH_REQUEST, dataA
     companion object {
         private val gson = Gson()
 
-        fun <T>fromJsonString(json: String, clazz: Class<T>): SsnJsonMessage<T> {
+        fun <T> fromJsonString(json: String, clazz: Class<T>): SsnJsonMessage<T> {
             val token = TypeToken.getParameterized(SsnJsonMessage::class.java, clazz)
             return gson.fromJson(json, token.type) as SsnJsonMessage<T>
         }

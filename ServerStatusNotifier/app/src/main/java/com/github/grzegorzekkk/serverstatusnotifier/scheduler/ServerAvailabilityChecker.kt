@@ -18,7 +18,6 @@ import com.github.grzegorzekkk.serverstatusnotifier.ServersActivity
 import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetailsDbHelper
 import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
-import java.lang.ref.WeakReference
 
 class ServerAvailabilityChecker : JobService(), LoadSavedServersTask.OnLoadSavedServersListener {
     private var isInitialized: Boolean = false
@@ -38,7 +37,7 @@ class ServerAvailabilityChecker : JobService(), LoadSavedServersTask.OnLoadSaved
         }
 
         val dbServersList = dbHelper.fetchServersFromDb()
-        val loadTask = LoadSavedServersTask(WeakReference(this), this)
+        val loadTask = LoadSavedServersTask(this)
         loadTask.execute(dbServersList)
         return true
     }

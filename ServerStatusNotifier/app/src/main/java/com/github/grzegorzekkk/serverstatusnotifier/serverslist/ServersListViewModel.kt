@@ -11,11 +11,6 @@ class ServersListViewModel : ViewModel(), LoadSavedServersTask.OnLoadSavedServer
 
     fun serversList(): LiveData<List<ServerDetails>> = serversLiveData
 
-//    fun refreshSavedServers() {
-//        val testServers = mutableListOf(ServerStatus("tescik", true), ServerStatus("Testowy serwer 2", false))
-//        serversLiveData.value = testServers
-//    }
-
     fun addServer(server: ServerDetails) {
         val list = serversLiveData.value?.toMutableList()
         list?.add(server)

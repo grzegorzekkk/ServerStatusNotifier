@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.server_status.view.*
 class ServerStatusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val serverName = itemView.serverName
     private val serverStatusText = itemView.status_text
-    private val serverStatusImage = itemView.status_image
+    private val serverStatusImage = itemView.itemImage
 
     fun bindItem(serverDetails: ServerDetails, onDetailsClicked: (ServerDetails) -> Unit) {
         serverName.text = serverDetails.serverStatus.serverName

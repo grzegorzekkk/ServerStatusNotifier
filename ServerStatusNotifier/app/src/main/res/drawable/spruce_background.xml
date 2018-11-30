@@ -3,7 +3,7 @@
 
     <item>
         <bitmap
-            android:src="@drawable/wood_plank"
+            android:src="@drawable/spruce_plank"
             android:tileMode="repeat" />
     </item>
     <item>

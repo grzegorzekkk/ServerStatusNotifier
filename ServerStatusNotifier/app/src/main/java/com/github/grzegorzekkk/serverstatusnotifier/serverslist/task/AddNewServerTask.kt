@@ -1,27 +1,21 @@
 package com.github.grzegorzekkk.serverstatusnotifier.serverslist.task
 
-import android.content.Context
 import android.os.AsyncTask
 import com.github.grzegorzekkk.serverstatusnotifier.ProgressBarHandler
 import com.github.grzegorzekkk.serverstatusnotifier.client.NotifierClient
 import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
 import java.io.IOException
-import java.lang.ref.WeakReference
 import java.net.InetAddress
 
-class AddNewServerTask(private val context: WeakReference<Context>) : AsyncTask<String, Unit, ServerDetails>() {
-    private lateinit var progressBar: ProgressBarHandler
-    private lateinit var newServerAddListener: OnNewServerAddListener
-    private lateinit var srvConnDetails: SrvConnDetails
+class AddNewServerTask(private val listener: OnNewServerAddListener) : AsyncTask<String, Unit, ServerDetails>() {
+    var progressBar: ProgressBarHandler? = null
     private var hasTimedOut: Boolean = false
 
     override fun onPreExecute() {
         super.onPreExecute()
 
-        newServerAddListener = context.get() as OnNewServerAddListener
-        progressBar = ProgressBarHandler(context.get()!!)
-        progressBar.show()
+        progressBar?.show()
     }
 
     override fun doInBackground(vararg args: String): ServerDetails? {
@@ -29,7 +23,7 @@ class AddNewServerTask(private val context: WeakReference<Context>) : AsyncTask<
             val address = args[0]
             val port = args[1].toInt()
             val password = args[2]
-            srvConnDetails = SrvConnDetails(address, port, password)
+            val srvConnDetails = SrvConnDetails(address, port, password)
 
             val server = NotifierClient(InetAddress.getByName(address), port)
             val serverDetails = server.fetchServerDetails(password)
@@ -45,10 +39,10 @@ class AddNewServerTask(private val context: WeakReference<Context>) : AsyncTask<
     override fun onPostExecute(result: ServerDetails?) {
         super.onPostExecute(result)
         when {
-            hasTimedOut -> newServerAddListener.onTimeout()
-            else -> newServerAddListener.onNewServerAdd(result)
+            hasTimedOut -> listener.onTimeout()
+            else -> listener.onNewServerAdd(result)
         }
-        progressBar.hide()
+        progressBar?.hide()
     }
 
     interface OnNewServerAddListener {
