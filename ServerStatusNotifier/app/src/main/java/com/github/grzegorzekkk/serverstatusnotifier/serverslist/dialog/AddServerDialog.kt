@@ -1,7 +1,7 @@
 package com.github.grzegorzekkk.serverstatusnotifier.serverslist.dialog
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater

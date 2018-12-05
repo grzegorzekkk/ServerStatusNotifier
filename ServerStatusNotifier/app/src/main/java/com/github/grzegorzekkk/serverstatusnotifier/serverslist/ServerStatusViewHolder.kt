@@ -1,7 +1,7 @@
 package com.github.grzegorzekkk.serverstatusnotifier.serverslist
 
 import android.graphics.BitmapFactory
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import com.github.grzegorzekkk.serverstatusnotifier.R
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails

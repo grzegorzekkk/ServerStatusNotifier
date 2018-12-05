@@ -1,9 +1,10 @@
 package com.github.grzegorzekkk.serverstatusnotifier.serverdetails
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import android.view.Gravity
 import com.github.grzegorzekkk.serverstatusnotifier.R
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 import kotlinx.android.synthetic.main.activity_server_details.*
@@ -22,8 +23,13 @@ class ServerDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateView(serverDetails: ServerDetails?) {
-        serverName.text = serverDetails?.serverName
-        playersCountPanel.itemTitle.text = getString(R.string.details_player_count)
-        playersCountPanel.itemData.text = serverDetails?.playersCount.toString()
+        if (serverDetails != null) {
+            serverName.text = serverDetails.serverName
+            playersCountPanel.itemTitle.text = getString(R.string.details_player_count)
+            playersCountPanel.itemData.text = String.format(getString(R.string.value_of_format), serverDetails.playersCount, serverDetails.playersMax)
+            versionPanel.itemTitle.text = getString(R.string.server_version)
+            versionPanel.itemData.text = serverDetails.serverVersion
+            versionPanel.itemData.gravity = Gravity.CENTER
+        }
     }
 }

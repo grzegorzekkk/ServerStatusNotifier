@@ -16,4 +16,6 @@
     <string name="notification_title">Alert! Offline server(s)</string>
     <string name="notification_description">Notifier has found %s of your servers offline. Tap to open Notifier app.</string>
     <string name="details_player_count">Online players:</string>
+    <string name="value_of_format">%s / %s</string>
+    <string name="server_version">Server version:</string>
 </resources>

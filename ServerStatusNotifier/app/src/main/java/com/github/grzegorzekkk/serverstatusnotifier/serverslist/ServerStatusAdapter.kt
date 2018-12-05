@@ -1,6 +1,6 @@
 package com.github.grzegorzekkk.serverstatusnotifier.serverslist
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.github.grzegorzekkk.serverstatusnotifier.R.layout.server_status
