@@ -3,8 +3,8 @@ package com.github.grzegorzekkk.serverstatusnotifier.serverslist
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 
 class ServersListViewModel : ViewModel(), LoadSavedServersTask.OnLoadSavedServersListener {
     private val serversLiveData = MutableLiveData<List<ServerDetails>>()

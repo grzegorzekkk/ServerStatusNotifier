@@ -16,8 +16,8 @@ import android.support.v4.app.NotificationManagerCompat
 import com.github.grzegorzekkk.serverstatusnotifier.R
 import com.github.grzegorzekkk.serverstatusnotifier.ServersActivity
 import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetailsDbHelper
-import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 
 class ServerAvailabilityChecker : JobService(), LoadSavedServersTask.OnLoadSavedServersListener {
     private var isInitialized: Boolean = false
@@ -48,7 +48,7 @@ class ServerAvailabilityChecker : JobService(), LoadSavedServersTask.OnLoadSaved
 
     override fun onLoadSavedServers(serverDetailsList: List<ServerDetails>) {
         dbHelper.close()
-        val offlineServers = serverDetailsList.filter { !it.serverStatus.isOnline }.toList()
+        val offlineServers = serverDetailsList.filter { !it.isOnline }.toList()
         val offlineCount = offlineServers.size
 
         if (offlineServers.isNotEmpty()) {

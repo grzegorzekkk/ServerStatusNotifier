@@ -3,9 +3,9 @@ package com.github.grzegorzekkk.serverstatusnotifier.serverslist.task
 import android.os.AsyncTask
 import com.github.grzegorzekkk.serverstatusnotifier.ProgressBarHandler
 import com.github.grzegorzekkk.serverstatusnotifier.client.NotifierClient
-import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetails
-import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.model.ServerStatus
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.SrvConnDetails
 import java.io.IOException
 import java.net.InetAddress
 
@@ -25,11 +25,12 @@ class LoadSavedServersTask(private val listener: OnLoadSavedServersListener) : A
             try {
                 val server = NotifierClient(InetAddress.getByName(connDetails.address), connDetails.port)
                 val serverDetails = server.fetchServerDetails(connDetails.password)
-                serverDetails?.srvConnDetails = connDetails
+                serverDetails?.connDetails = connDetails
                 server.shutdown()
                 serverDetailsList.add(serverDetails!!)
             } catch (ex: IOException) {
-                val serverDetails = ServerDetails(ServerStatus(connDetails.address, false), connDetails, 0)
+                val serverDetails = ServerDetails(connDetails, false)
+                serverDetails.serverName = connDetails.address
                 serverDetailsList.add(serverDetails)
             }
         }

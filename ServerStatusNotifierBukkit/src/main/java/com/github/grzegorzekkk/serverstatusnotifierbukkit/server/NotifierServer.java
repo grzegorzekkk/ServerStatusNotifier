@@ -1,12 +1,11 @@
 package com.github.grzegorzekkk.serverstatusnotifierbukkit.server;
 
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails;
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.SsnJsonMessage;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.ServerStatusNotifierBukkit;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.PluginConfig;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.Message;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.MessagesConfig;
-import com.github.grzegorzekkk.serverstatusnotifierbukkit.model.ServerDetails;
-import com.github.grzegorzekkk.serverstatusnotifierbukkit.model.ServerStatus;
-import com.github.grzegorzekkk.serverstatusnotifierbukkit.model.SsnJsonMessage;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.utils.ConsoleLogger;
 import lombok.Data;
 import org.bukkit.Bukkit;
@@ -57,12 +56,10 @@ public class NotifierServer {
 
             SsnJsonMessage<String> ssnAuthRequest = SsnJsonMessage.fromJsonString(inReader.readLine(), String.class);
             if (PluginConfig.getInstance().getPassword().equals(ssnAuthRequest.getData())) {
-                String serverName = Bukkit.getServerName();
-                int playersOnline = Bukkit.getOnlinePlayers().size();
+                ServerDetails srvDetails = fetchCurrentServerDetails();
 
-                ServerStatus serverStatus = new ServerStatus(serverName, true);
                 SsnJsonMessage<ServerDetails> ssnDataResponse = new SsnJsonMessage<>();
-                ssnDataResponse.setData(new ServerDetails(serverStatus, playersOnline));
+                ssnDataResponse.setData(srvDetails);
                 ssnDataResponse.setStatus(SsnJsonMessage.MessageType.DATA_RESPONSE);
 
                 writer.println(ssnDataResponse.toJsonString());
@@ -83,5 +80,16 @@ public class NotifierServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private ServerDetails fetchCurrentServerDetails() {
+        ServerDetails serverDetails = new ServerDetails();
+        serverDetails.setServerName(Bukkit.getServerName());
+        serverDetails.setPlayersCount(Bukkit.getOnlinePlayers().size());
+        serverDetails.setOnline(true);
+        serverDetails.setServerVersion(Bukkit.getVersion());
+        serverDetails.setPlayersMax(Bukkit.getMaxPlayers());
+
+        return serverDetails;
     }
 }

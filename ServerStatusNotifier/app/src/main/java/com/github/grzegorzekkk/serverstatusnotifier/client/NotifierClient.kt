@@ -1,7 +1,7 @@
 package com.github.grzegorzekkk.serverstatusnotifier.client
 
-import com.github.grzegorzekkk.serverstatusnotifier.client.model.SsnJsonMessage
-import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.SsnJsonMessage
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.net.InetAddress
@@ -23,7 +23,11 @@ class NotifierClient(private val address: InetAddress, private val port: Int) {
     }
 
     fun fetchServerDetails(password: String): ServerDetails? {
-        val ssnAuthRequest = SsnJsonMessage(SsnJsonMessage.MessageType.AUTH_REQUEST, password)
+        val ssnAuthRequest = SsnJsonMessage<String>().apply {
+            status = SsnJsonMessage.MessageType.AUTH_REQUEST
+            data = password
+        }
+
         writer.apply {
             write(ssnAuthRequest.toJsonString())
             newLine()
@@ -32,7 +36,7 @@ class NotifierClient(private val address: InetAddress, private val port: Int) {
 
         val ssnResponse = SsnJsonMessage.fromJsonString(reader.readText(), ServerDetails::class.java)
         return if (SsnJsonMessage.MessageType.DATA_RESPONSE == ssnResponse.status) {
-            ssnResponse.data
+            ssnResponse.data as ServerDetails
         } else {
             null
         }

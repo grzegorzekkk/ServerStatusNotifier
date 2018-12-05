@@ -3,8 +3,8 @@ package com.github.grzegorzekkk.serverstatusnotifier.serverslist.task
 import android.os.AsyncTask
 import com.github.grzegorzekkk.serverstatusnotifier.ProgressBarHandler
 import com.github.grzegorzekkk.serverstatusnotifier.client.NotifierClient
-import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetails
-import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.SrvConnDetails
 import java.io.IOException
 import java.net.InetAddress
 
@@ -28,7 +28,7 @@ class AddNewServerTask(private val listener: OnNewServerAddListener) : AsyncTask
             val server = NotifierClient(InetAddress.getByName(address), port)
             val serverDetails = server.fetchServerDetails(password)
             server.shutdown()
-            serverDetails?.srvConnDetails = srvConnDetails
+            serverDetails?.connDetails = srvConnDetails
             return serverDetails
         } catch (ex: IOException) {
             hasTimedOut = true

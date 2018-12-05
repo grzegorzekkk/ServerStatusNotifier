@@ -21,13 +21,13 @@ import com.github.grzegorzekkk.serverstatusnotifier.R.menu.menu_servers
 import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetailsDbHelper
 import com.github.grzegorzekkk.serverstatusnotifier.scheduler.ServerAvailabilityChecker
 import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.ServerDetailsActivity
-import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.ServerStatusAdapter
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.ServersListViewModel
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.dialog.AboutDialog
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.dialog.AddServerDialog
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.AddNewServerTask
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 import kotlinx.android.synthetic.main.activity_servers.*
 
 
@@ -100,7 +100,7 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
     override fun onNewServerAdd(serversDetails: ServerDetails?) {
         if (serversDetails != null) {
             serversViewModel.addServer(serversDetails)
-            dbHelper.saveServerConnDetails(serversDetails.srvConnDetails)
+            dbHelper.saveServerConnDetails(serversDetails.connDetails)
         }
     }
 
@@ -116,7 +116,7 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
 
     private fun refreshServersList(serversList: List<ServerDetails>) {
         if (serversList.isNotEmpty()) {
-            val connDetailsList = serversList.map { it.srvConnDetails }.toList()
+            val connDetailsList = serversList.map { it.connDetails }.toList()
             val loadTask = LoadSavedServersTask(serversViewModel)
             loadTask.progressBar = progressBarHandler
             loadTask.execute(connDetailsList)

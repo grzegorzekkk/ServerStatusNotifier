@@ -4,7 +4,7 @@ import android.graphics.BitmapFactory
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.github.grzegorzekkk.serverstatusnotifier.R
-import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.model.ServerDetails
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 import kotlinx.android.synthetic.main.server_status.view.*
 
 class ServerStatusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -13,14 +13,14 @@ class ServerStatusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     private val serverStatusImage = itemView.itemImage
 
     fun bindItem(serverDetails: ServerDetails, onDetailsClicked: (ServerDetails) -> Unit) {
-        serverName.text = serverDetails.serverStatus.serverName
-        if (serverDetails.serverStatus.isOnline) {
+        serverName.text = serverDetails.serverName
+        if (serverDetails.isOnline) {
             serverStatusText.text = itemView.resources.getString(R.string.common_online)
             serverStatusImage.setImageBitmap(BitmapFactory.decodeResource(itemView.resources, R.drawable.emerald_block))
+            itemView.setOnClickListener { onDetailsClicked(serverDetails) }
         } else {
             serverStatusText.text = itemView.resources.getString(R.string.common_offline)
             serverStatusImage.setImageBitmap(BitmapFactory.decodeResource(itemView.resources, R.drawable.redstone_block))
         }
-        itemView.setOnClickListener { onDetailsClicked(serverDetails) }
     }
 }

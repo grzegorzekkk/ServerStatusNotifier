@@ -99,6 +99,106 @@ ServerStatusNotifierBukkit/.recommenders/
 # Annotation Processing
 ServerStatusNotifierBukkit/.apt_generated/
 
+### Java template
+# Compiled class file
+ServerStatusNotifierModel/*.class
+
+# Log file
+ServerStatusNotifierModel/*.log
+
+# BlueJ files
+ServerStatusNotifierModel/*.ctxt
+
+# Mobile Tools for Java (J2ME)
+ServerStatusNotifierModel/.mtj.tmp/
+
+# Package Files #
+ServerStatusNotifierModel/*.jar
+ServerStatusNotifierModel/*.zip
+ServerStatusNotifierModel/*.tar.gz
+ServerStatusNotifierModel/*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+ServerStatusNotifierModel/hs_err_pid*
+### JetBrains template
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+ServerStatusNotifierModel/.idea/
+ServerStatusNotifierModel/.gradle/
+ServerStatusNotifierModel/gradle/
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+# .idea/modules.xml
+# .idea/*.iml
+# .idea/modules
+
+# File-based project format
+ServerStatusNotifierModel/*.iws
+
+# IntelliJ
+ServerStatusNotifierModel/out/
+
+# mpeltonen/sbt-idea plugin
+ServerStatusNotifierModel/.idea_modules/
+
+# Editor-based Rest Client
+ServerStatusNotifierModel/.idea/httpRequests
+### NetBeans template
+ServerStatusNotifierModel/nbproject/private/
+ServerStatusNotifierModel/build/
+ServerStatusNotifierModel/nbbuild/
+ServerStatusNotifierModel/dist/
+ServerStatusNotifierModel/nbdist/
+ServerStatusNotifierModel/.nb-gradle/
+### Eclipse template
+
+ServerStatusNotifierModel/.metadata
+ServerStatusNotifierModel/bin/
+ServerStatusNotifierModel/tmp/
+ServerStatusNotifierModel/*.tmp
+ServerStatusNotifierModel/*.bak
+ServerStatusNotifierModel/*.swp
+ServerStatusNotifierModel/*~.nib
+ServerStatusNotifierModel/local.properties
+ServerStatusNotifierModel/.settings/
+ServerStatusNotifierModel/.loadpath
+ServerStatusNotifierModel/.recommenders
+
+# External tool builders
+ServerStatusNotifierModel/.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+ServerStatusNotifierModel/*.launch
+
+# Java annotation processor (APT)
+ServerStatusNotifierModel/.factorypath
+
+# PDT-specific (PHP Development Tools)
+ServerStatusNotifierModel/.buildpath
+
+# sbteclipse plugin
+ServerStatusNotifierModel/.target
+
+# Tern plugin
+ServerStatusNotifierModel/.tern-project
+
+# TeXlipse plugin
+ServerStatusNotifierModel/.texlipse
+
+# STS (Spring Tool Suite)
+ServerStatusNotifierModel/.springBeans
+
+# Code Recommenders
+ServerStatusNotifierModel/.recommenders/
+
+# Annotation Processing
+ServerStatusNotifierModel/.apt_generated/
+
 # Built application files
 ServerStatusNotifier/*.apk
 ServerStatusNotifier/*.ap_
