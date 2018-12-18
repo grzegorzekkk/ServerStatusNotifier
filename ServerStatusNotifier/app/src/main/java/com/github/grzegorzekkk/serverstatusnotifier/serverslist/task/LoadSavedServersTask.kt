@@ -24,7 +24,8 @@ class LoadSavedServersTask(private val listener: OnLoadSavedServersListener) : A
         for (connDetails in list[0]) {
             try {
                 val server = NotifierClient(InetAddress.getByName(connDetails.address), connDetails.port)
-                val serverDetails = server.fetchServerDetails(connDetails.password)
+                server.authorize(connDetails.password)
+                val serverDetails = server.fetchServerDetails()
                 serverDetails?.connDetails = connDetails
                 server.shutdown()
                 serverDetailsList.add(serverDetails!!)

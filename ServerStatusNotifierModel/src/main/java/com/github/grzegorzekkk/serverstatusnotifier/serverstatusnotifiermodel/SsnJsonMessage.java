@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -20,10 +21,15 @@ public class SsnJsonMessage<T> implements Serializable {
     private MessageType status;
     private T data;
     private Date creationDate = new Date();
+    private UUID clientId;
 
     public enum MessageType {
-        AUTH_REQUEST,
+        CONSOLE_REQUEST,
+        CONSOLE_RESPONSE,
+        DATA_REQUEST,
         DATA_RESPONSE,
+        AUTH_REQUEST,
+        AUTHORIZED_RESPONSE,
         UNAUTHORIZED_RESPONSE
     }
 

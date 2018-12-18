@@ -26,7 +26,8 @@ class AddNewServerTask(private val listener: OnNewServerAddListener) : AsyncTask
             val srvConnDetails = SrvConnDetails(address, port, password)
 
             val server = NotifierClient(InetAddress.getByName(address), port)
-            val serverDetails = server.fetchServerDetails(password)
+            server.authorize(password)
+            val serverDetails = server.fetchServerDetails()
             server.shutdown()
             serverDetails?.connDetails = srvConnDetails
             return serverDetails
