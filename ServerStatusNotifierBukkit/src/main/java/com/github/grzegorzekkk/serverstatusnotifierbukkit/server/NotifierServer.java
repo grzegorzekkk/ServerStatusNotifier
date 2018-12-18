@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.LogRecord;
@@ -27,8 +28,7 @@ import java.util.logging.LogRecord;
 public class NotifierServer implements ConsoleHandler.ConsoleObservable {
     private ServerSocket serverSocket;
     private Set<UUID> clientsIdentifiers;
-    private boolean isObservingConsoleNow;
-    private PrintWriter clientWriter;
+    private List<Socket> consoleListeners;
 
     public NotifierServer(int port) {
         try {
@@ -61,7 +61,6 @@ public class NotifierServer implements ConsoleHandler.ConsoleObservable {
     private void listenForClientMessages(Socket clientSocket) {
         try (BufferedReader inReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              PrintWriter writer = new PrintWriter(clientSocket.getOutputStream())) {
-            clientWriter = writer;
 
             for (String jsonString = inReader.readLine(); jsonString != null; jsonString = inReader.readLine()) {
                 SsnJsonMessage<String> incomingMessage = SsnJsonMessage.fromJsonString(jsonString, String.class);
@@ -76,7 +75,7 @@ public class NotifierServer implements ConsoleHandler.ConsoleObservable {
                         handleDataRequest(clientId, writer);
                         break;
                     case CONSOLE_REQUEST:
-                        handleConsoleRequest(clientId, writer);
+                        handleConsoleRequest(clientId, clientSocket);
                         break;
                     default:
                         break;
@@ -120,24 +119,30 @@ public class NotifierServer implements ConsoleHandler.ConsoleObservable {
         }
     }
 
-    private void handleConsoleRequest(UUID clientId, PrintWriter writer) {
-        if (clientsIdentifiers.contains(clientId)) {
+    private void handleConsoleRequest(UUID clientId, Socket consoleListener) {
+        if (clientsIdentifiers.isEmpty()) {
             ConsoleHandler consoleHandler = new ConsoleHandler();
             consoleHandler.setObserver(this);
-            isObservingConsoleNow = true;
             Bukkit.getLogger().addHandler(consoleHandler);
+        }
+        if (clientsIdentifiers.contains(clientId)) {
+            consoleListeners.add(consoleListener);
         }
     }
 
     @Override
     public void onRecordPublish(LogRecord record) {
-        if (isObservingConsoleNow && clientWriter!=null) {
-            SsnJsonMessage<String> ssnConsoleResponse = new SsnJsonMessage<>();
-            ssnConsoleResponse.setStatus(SsnJsonMessage.MessageType.CONSOLE_RESPONSE);
-            ssnConsoleResponse.setData(record.toString());
+        SsnJsonMessage<String> ssnConsoleResponse = new SsnJsonMessage<>();
+        ssnConsoleResponse.setStatus(SsnJsonMessage.MessageType.CONSOLE_RESPONSE);
+        ssnConsoleResponse.setData(record.toString());
 
-            clientWriter.println(ssnConsoleResponse);
-        }
+        consoleListeners.stream().filter(s -> s.isConnected() && !s.isOutputShutdown()).forEach(socket -> {
+            try (PrintWriter writer = new PrintWriter(socket.getOutputStream())) {
+                writer.println(ssnConsoleResponse);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     private ServerDetails fetchCurrentServerDetails() {
