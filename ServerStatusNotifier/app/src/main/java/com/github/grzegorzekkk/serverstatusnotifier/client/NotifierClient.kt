@@ -1,5 +1,6 @@
 package com.github.grzegorzekkk.serverstatusnotifier.client
 
+import com.github.grzegorzekkk.serverstatusnotifier.serverconsole.model.ConsoleLine
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.SsnJsonMessage
 import java.io.BufferedReader
@@ -10,7 +11,7 @@ import java.net.Socket
 import java.util.*
 import javax.net.SocketFactory
 
-class NotifierClient(private val address: InetAddress, private val port: Int) {
+class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false) {
     var isAuthorized = false
         private set
     var isGettingConsoleUpdates = false
@@ -23,7 +24,7 @@ class NotifierClient(private val address: InetAddress, private val port: Int) {
     init {
         socket = SocketFactory.getDefault().createSocket()
         socket.connect(InetSocketAddress(address, port), TIMEOUT)
-        socket.soTimeout = TIMEOUT
+        if (noTimeout) { socket.soTimeout = TIMEOUT }
         writer = socket.getOutputStream().bufferedWriter()
         reader = socket.getInputStream().bufferedReader()
     }
@@ -86,13 +87,20 @@ class NotifierClient(private val address: InetAddress, private val port: Int) {
         }
     }
 
-    fun fetchConsoleLine() : String? {
-        return if (isGettingConsoleUpdates) {
-            val ssnConsoleResponse = SsnJsonMessage.fromJsonString(reader.readLine(), String::class.java)
-            ssnConsoleResponse.data as String
-        } else {
-            null
+    fun fetchConsoleLines() : List<ConsoleLine> {
+        val lines = mutableListOf<ConsoleLine>()
+
+        if (isGettingConsoleUpdates) {
+            while (isDataToReadAvailable()) {
+                val ssnConsoleResponse = SsnJsonMessage.fromJsonString(reader.readLine(), String::class.java)
+                lines.add(ConsoleLine(ssnConsoleResponse.data as String))
+            }
         }
+        return lines
+    }
+
+    fun isDataToReadAvailable(): Boolean {
+        return reader.ready()
     }
 
     fun shutdown() {
@@ -102,6 +110,6 @@ class NotifierClient(private val address: InetAddress, private val port: Int) {
     }
 
     companion object {
-        const val TIMEOUT = 2000
+        const val TIMEOUT = 20000
     }
 }

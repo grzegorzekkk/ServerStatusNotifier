@@ -18,23 +18,25 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.LogRecord;
+import java.util.*;
 
 @Data
-public class NotifierServer implements ConsoleHandler.ConsoleObservable {
+public class NotifierServer implements ConsoleAppender.ConsoleObservable {
+    private ConsoleAppender consoleAppender;
     private ServerSocket serverSocket;
     private Set<UUID> clientsIdentifiers;
-    private List<Socket> consoleListeners;
+    private List<Socket> consoleListeners = new LinkedList<>();
 
     public NotifierServer(int port) {
         try {
             serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
             ConsoleLogger.info(String.format(MessagesConfig.getInstance().getMessage(Message.NOTIFIER_ENABLED), port));
             clientsIdentifiers = new HashSet<>();
+
+            consoleAppender = new ConsoleAppender();
+            consoleAppender.setObserver(this);
+            consoleAppender.start();
+            ServerStatusNotifierBukkit.ROOT_LOGGER.addAppender(consoleAppender);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,8 +61,9 @@ public class NotifierServer implements ConsoleHandler.ConsoleObservable {
     }
 
     private void listenForClientMessages(Socket clientSocket) {
-        try (BufferedReader inReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             PrintWriter writer = new PrintWriter(clientSocket.getOutputStream())) {
+        try {
+            BufferedReader inReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
 
             for (String jsonString = inReader.readLine(); jsonString != null; jsonString = inReader.readLine()) {
                 SsnJsonMessage<String> incomingMessage = SsnJsonMessage.fromJsonString(jsonString, String.class);
@@ -120,25 +123,22 @@ public class NotifierServer implements ConsoleHandler.ConsoleObservable {
     }
 
     private void handleConsoleRequest(UUID clientId, Socket consoleListener) {
-        if (clientsIdentifiers.isEmpty()) {
-            ConsoleHandler consoleHandler = new ConsoleHandler();
-            consoleHandler.setObserver(this);
-            Bukkit.getLogger().addHandler(consoleHandler);
-        }
         if (clientsIdentifiers.contains(clientId)) {
             consoleListeners.add(consoleListener);
         }
     }
 
     @Override
-    public void onRecordPublish(LogRecord record) {
+    public void onLogPublish(String logMessage) {
         SsnJsonMessage<String> ssnConsoleResponse = new SsnJsonMessage<>();
         ssnConsoleResponse.setStatus(SsnJsonMessage.MessageType.CONSOLE_RESPONSE);
-        ssnConsoleResponse.setData(record.toString());
+        ssnConsoleResponse.setData(logMessage);
 
-        consoleListeners.stream().filter(s -> s.isConnected() && !s.isOutputShutdown()).forEach(socket -> {
-            try (PrintWriter writer = new PrintWriter(socket.getOutputStream())) {
-                writer.println(ssnConsoleResponse);
+        consoleListeners.stream().filter(s -> !s.isClosed() && !s.isOutputShutdown()).forEach(socket -> {
+            try {
+                PrintWriter writer = new PrintWriter(socket.getOutputStream());
+                writer.println(ssnConsoleResponse.toJsonString());
+                writer.flush();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

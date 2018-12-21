@@ -5,6 +5,8 @@ import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.Messag
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.MessagesConfig;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.server.NotifierServer;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.utils.ConsoleLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -12,6 +14,7 @@ public class ServerStatusNotifierBukkit extends JavaPlugin {
     private static ServerStatusNotifierBukkit instance;
     private static PluginConfig config;
     private static MessagesConfig messagesConfig;
+    public static final Logger ROOT_LOGGER = (Logger) LogManager.getRootLogger();
 
     @Override
     public void onEnable() {

@@ -1,12 +1,15 @@
 package com.github.grzegorzekkk.serverstatusnotifier.serverdetails
 
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Gravity
 import com.github.grzegorzekkk.serverstatusnotifier.R
+import com.github.grzegorzekkk.serverstatusnotifier.serverconsole.ServerConsoleActivity
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
+import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.SrvConnDetails
 import kotlinx.android.synthetic.main.activity_server_details.*
 import kotlinx.android.synthetic.main.details_item.view.*
 
@@ -17,9 +20,15 @@ class ServerDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_server_details)
 
+        val srvDetails = intent.getSerializableExtra(ServerDetails.SERIAL_NAME) as ServerDetails
+
+        console_button.setOnClickListener {
+            showConsoleActivity(srvDetails.connDetails)
+        }
+
         srvDetailsViewModel = ViewModelProviders.of(this).get(ServerDetailsViewModel::class.java)
         srvDetailsViewModel.serverDetails().observe(this, Observer(this::updateView))
-        srvDetailsViewModel.load(intent.getSerializableExtra(ServerDetails.SERIAL_NAME) as ServerDetails)
+        srvDetailsViewModel.load(srvDetails)
     }
 
     private fun updateView(serverDetails: ServerDetails?) {
@@ -31,5 +40,11 @@ class ServerDetailsActivity : AppCompatActivity() {
             versionPanel.itemData.text = serverDetails.serverVersion
             versionPanel.itemData.gravity = Gravity.CENTER
         }
+    }
+
+    private fun showConsoleActivity(srvConnDetails: SrvConnDetails) {
+        val i = Intent(this, ServerConsoleActivity::class.java)
+                .putExtra(ServerDetails.SERIAL_NAME, srvConnDetails)
+        startActivity(i)
     }
 }
