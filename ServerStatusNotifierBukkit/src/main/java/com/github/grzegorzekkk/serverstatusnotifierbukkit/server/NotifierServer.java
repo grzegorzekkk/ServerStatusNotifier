@@ -6,6 +6,7 @@ import com.github.grzegorzekkk.serverstatusnotifierbukkit.ServerStatusNotifierBu
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.PluginConfig;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.Message;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.config.messages.MessagesConfig;
+import com.github.grzegorzekkk.serverstatusnotifierbukkit.server.exception.UnauthenticatedClientException;
 import com.github.grzegorzekkk.serverstatusnotifierbukkit.utils.ConsoleLogger;
 import lombok.Data;
 import org.bukkit.Bukkit;
@@ -70,15 +71,21 @@ public class NotifierServer implements ConsoleAppender.ConsoleObservable {
                 SsnJsonMessage.MessageType status = incomingMessage.getStatus();
                 UUID clientId = incomingMessage.getClientId();
 
+                if (status != SsnJsonMessage.MessageType.AUTH_REQUEST && !clientsIdentifiers.contains(clientId))
+                    throw new UnauthenticatedClientException();
+
                 switch (status) {
                     case AUTH_REQUEST:
                         handleClientAuth(jsonString, writer, clientSocket.getRemoteSocketAddress().toString());
                         break;
                     case DATA_REQUEST:
-                        handleDataRequest(clientId, writer);
+                        handleDataRequest(writer);
                         break;
                     case CONSOLE_REQUEST:
-                        handleConsoleRequest(clientId, clientSocket);
+                        handleConsoleRequest(clientSocket);
+                        break;
+                    case CONSOLE_COMMAND:
+                        handleConsoleCommand(jsonString);
                         break;
                     default:
                         break;
@@ -86,7 +93,7 @@ public class NotifierServer implements ConsoleAppender.ConsoleObservable {
 
                 writer.flush();
             }
-        } catch (IOException e) {
+        } catch (UnauthenticatedClientException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -110,22 +117,25 @@ public class NotifierServer implements ConsoleAppender.ConsoleObservable {
         writer.println(ssnAuthResponse.toJsonString());
     }
 
-    private void handleDataRequest(UUID clientId, PrintWriter writer) {
-        if (clientsIdentifiers.contains(clientId)) {
-            SsnJsonMessage<ServerDetails> ssnDataResponse = new SsnJsonMessage<>();
-            ServerDetails srvDetails = fetchCurrentServerDetails();
+    private void handleDataRequest(PrintWriter writer) {
+        SsnJsonMessage<ServerDetails> ssnDataResponse = new SsnJsonMessage<>();
+        ServerDetails srvDetails = fetchCurrentServerDetails();
 
-            ssnDataResponse.setStatus(SsnJsonMessage.MessageType.DATA_RESPONSE);
-            ssnDataResponse.setData(srvDetails);
+        ssnDataResponse.setStatus(SsnJsonMessage.MessageType.DATA_RESPONSE);
+        ssnDataResponse.setData(srvDetails);
 
-            writer.println(ssnDataResponse.toJsonString());
-        }
+        writer.println(ssnDataResponse.toJsonString());
     }
 
-    private void handleConsoleRequest(UUID clientId, Socket consoleListener) {
-        if (clientsIdentifiers.contains(clientId)) {
-            consoleListeners.add(consoleListener);
-        }
+    private void handleConsoleRequest(Socket consoleListener) {
+        consoleListeners.add(consoleListener);
+    }
+
+    private void handleConsoleCommand(String jsonString) {
+        SsnJsonMessage<String> ssnConsoleCommand = SsnJsonMessage.fromJsonString(jsonString, String.class);
+
+        String command = ssnConsoleCommand.getData();
+        Bukkit.getScheduler().callSyncMethod(ServerStatusNotifierBukkit.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
     }
 
     @Override

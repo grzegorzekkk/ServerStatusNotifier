@@ -26,6 +26,7 @@ public class SsnJsonMessage<T> implements Serializable {
     public enum MessageType {
         CONSOLE_REQUEST,
         CONSOLE_RESPONSE,
+        CONSOLE_COMMAND,
         DATA_REQUEST,
         DATA_RESPONSE,
         AUTH_REQUEST,

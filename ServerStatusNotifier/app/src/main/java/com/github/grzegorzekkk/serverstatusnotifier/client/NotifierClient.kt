@@ -11,7 +11,7 @@ import java.net.Socket
 import java.util.*
 import javax.net.SocketFactory
 
-class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false) {
+class NotifierClient(address: InetAddress, port: Int) {
     var isAuthorized = false
         private set
     var isGettingConsoleUpdates = false
@@ -24,7 +24,7 @@ class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false
     init {
         socket = SocketFactory.getDefault().createSocket()
         socket.connect(InetSocketAddress(address, port), TIMEOUT)
-        if (noTimeout) { socket.soTimeout = TIMEOUT }
+        socket.soTimeout = TIMEOUT
         writer = socket.getOutputStream().bufferedWriter()
         reader = socket.getInputStream().bufferedReader()
     }
@@ -36,11 +36,7 @@ class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false
             data = password
         }
 
-        writer.apply {
-            write(ssnAuthRequest.toJsonString())
-            newLine()
-            flush()
-        }
+        writeSsnMessage(ssnAuthRequest)
 
         val ssnResponse = SsnJsonMessage.fromJsonString(reader.readLine(), Unit::class.java)
         if (SsnJsonMessage.MessageType.AUTHORIZED_RESPONSE == ssnResponse.status) isAuthorized = true
@@ -53,11 +49,7 @@ class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false
                 clientId = clientIdentifier
             }
 
-            writer.apply {
-                write(ssnDataRequest.toJsonString())
-                newLine()
-                flush()
-            }
+            writeSsnMessage(ssnDataRequest)
 
             val ssnDataResponse = SsnJsonMessage.fromJsonString(reader.readLine(), ServerDetails::class.java)
             return if (SsnJsonMessage.MessageType.DATA_RESPONSE == ssnDataResponse.status) {
@@ -77,11 +69,7 @@ class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false
                 clientId = clientIdentifier
             }
 
-            writer.apply {
-                write(ssnConsoleRequest.toJsonString())
-                newLine()
-                flush()
-            }
+            writeSsnMessage(ssnConsoleRequest)
 
             isGettingConsoleUpdates = true
         }
@@ -99,6 +87,16 @@ class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false
         return lines
     }
 
+    fun sendConsoleCommand(command: String) {
+        val ssnConsoleCommand = SsnJsonMessage<String>().apply {
+            data = command
+            status = SsnJsonMessage.MessageType.CONSOLE_COMMAND
+            clientId = clientIdentifier
+        }
+
+        writeSsnMessage(ssnConsoleCommand)
+    }
+
     fun isDataToReadAvailable(): Boolean {
         return reader.ready()
     }
@@ -109,7 +107,15 @@ class NotifierClient(address: InetAddress, port: Int, noTimeout: Boolean = false
         socket.close()
     }
 
+    private fun writeSsnMessage(message: SsnJsonMessage<out Any>) {
+        writer.apply {
+            write(message.toJsonString())
+            newLine()
+            flush()
+        }
+    }
+
     companion object {
-        const val TIMEOUT = 20000
+        const val TIMEOUT = 2000
     }
 }

@@ -2,18 +2,18 @@ package com.github.grzegorzekkk.serverstatusnotifier
 
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.grzegorzekkk.serverstatusnotifier.R.id.action_about
 import com.github.grzegorzekkk.serverstatusnotifier.R.id.action_settings
 import com.github.grzegorzekkk.serverstatusnotifier.R.layout.activity_servers
@@ -111,7 +111,7 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
     }
 
     override fun onTimeout() {
-        Toast.makeText(this, R.string.conn_server_timeout, Toast.LENGTH_LONG).show()
+        Toast.makeText(this, R.string.conn_new_server_timeout, Toast.LENGTH_LONG).show()
     }
 
     private fun updateServersList(serverDetailsList: List<ServerDetails>?) {

@@ -4,34 +4,40 @@ import android.os.AsyncTask
 import com.github.grzegorzekkk.serverstatusnotifier.client.NotifierClient
 import com.github.grzegorzekkk.serverstatusnotifier.serverconsole.model.ConsoleLine
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.SrvConnDetails
+import java.io.IOException
 import java.net.InetAddress
 
 class ConsoleOutputTask(var listener: OnConsoleLineReceivedListener) : AsyncTask<SrvConnDetails, List<ConsoleLine>, Unit>() {
     private lateinit var client: NotifierClient
-
-    override fun onPreExecute() {
-        super.onPreExecute()
-    }
+    private var exception: IOException? = null
 
     override fun doInBackground(vararg args: SrvConnDetails?) {
         val connDetails = args[0]!!
 
-        client = NotifierClient(InetAddress.getByName(connDetails.address), connDetails.port, true)
-        client.authorize(connDetails.password)
-        client.openConsoleStream()
+        try {
+            client = NotifierClient(InetAddress.getByName(connDetails.address), connDetails.port)
+            client.authorize(connDetails.password)
+            client.openConsoleStream()
 
-        while (!isCancelled) {
-            if (client.isDataToReadAvailable()) {
-                val consoleLines = client.fetchConsoleLines()
-                if (consoleLines.isNotEmpty()) {
-                    publishProgress(consoleLines)
+            while (!isCancelled) {
+                if (client.isDataToReadAvailable()) {
+                    val consoleLines = client.fetchConsoleLines()
+                    if (consoleLines.isNotEmpty()) {
+                        publishProgress(consoleLines)
+                    }
                 }
             }
+        } catch (ex: IOException) {
+            exception = ex
+            cancel(true)
         }
     }
 
     override fun onCancelled() {
         client.shutdown()
+        if (exception != null) {
+            listener.onConnectionTimeout()
+        }
         super.onCancelled()
     }
 
@@ -39,7 +45,7 @@ class ConsoleOutputTask(var listener: OnConsoleLineReceivedListener) : AsyncTask
         listener.onConsoleLineReceived(lines[0])
     }
 
-    interface OnConsoleLineReceivedListener {
+    interface OnConsoleLineReceivedListener : OnConnectionTimeoutListener {
         fun onConsoleLineReceived(consoleLines: List<ConsoleLine>)
     }
 }
