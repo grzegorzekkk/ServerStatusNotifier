@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.github.grzegorzekkk.serverstatusnotifier.R
 import com.github.grzegorzekkk.serverstatusnotifier.ServersActivity
-import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetailsDbHelper
+import com.github.grzegorzekkk.serverstatusnotifier.database.AppDbHelper
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 
@@ -23,7 +23,7 @@ class ServerAvailabilityChecker : JobService(), LoadSavedServersTask.OnLoadSaved
     private var isInitialized: Boolean = false
 
     private lateinit var pendingIntent: PendingIntent
-    private lateinit var dbHelper: SrvConnDetailsDbHelper
+    private lateinit var dbHelper: AppDbHelper
     private var params: JobParameters? = null
 
     override fun onStartJob(params: JobParameters?): Boolean {
@@ -33,7 +33,7 @@ class ServerAvailabilityChecker : JobService(), LoadSavedServersTask.OnLoadSaved
             createNotificationChannel()
             createNotificationIntent()
             isInitialized = true
-            dbHelper = SrvConnDetailsDbHelper(this)
+            dbHelper = AppDbHelper(this)
         }
 
         val dbServersList = dbHelper.fetchServersFromDb()

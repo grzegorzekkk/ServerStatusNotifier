@@ -8,14 +8,12 @@ import java.io.BufferedWriter
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
-import java.util.*
 import javax.net.SocketFactory
 
 class NotifierClient(address: InetAddress, port: Int) {
     var isAuthorized = false
         private set
     var isGettingConsoleUpdates = false
-    val clientIdentifier = UUID.randomUUID()!!
 
     private val socket: Socket
     private val writer: BufferedWriter
@@ -32,7 +30,7 @@ class NotifierClient(address: InetAddress, port: Int) {
     fun authorize(password: String) {
         val ssnAuthRequest = SsnJsonMessage<String>().apply {
             status = SsnJsonMessage.MessageType.AUTH_REQUEST
-            clientId = clientIdentifier
+            clientId = AppSettings.uuid
             data = password
         }
 
@@ -46,7 +44,7 @@ class NotifierClient(address: InetAddress, port: Int) {
         if (isAuthorized) {
             val ssnDataRequest = SsnJsonMessage<Unit>().apply {
                 status = SsnJsonMessage.MessageType.DATA_REQUEST
-                clientId = clientIdentifier
+                clientId = AppSettings.uuid
             }
 
             writeSsnMessage(ssnDataRequest)
@@ -66,7 +64,7 @@ class NotifierClient(address: InetAddress, port: Int) {
         if (isAuthorized) {
             val ssnConsoleRequest = SsnJsonMessage<Unit>().apply {
                 status = SsnJsonMessage.MessageType.CONSOLE_REQUEST
-                clientId = clientIdentifier
+                clientId = AppSettings.uuid
             }
 
             writeSsnMessage(ssnConsoleRequest)
@@ -91,7 +89,7 @@ class NotifierClient(address: InetAddress, port: Int) {
         val ssnConsoleCommand = SsnJsonMessage<String>().apply {
             data = command
             status = SsnJsonMessage.MessageType.CONSOLE_COMMAND
-            clientId = clientIdentifier
+            clientId = AppSettings.uuid
         }
 
         writeSsnMessage(ssnConsoleCommand)

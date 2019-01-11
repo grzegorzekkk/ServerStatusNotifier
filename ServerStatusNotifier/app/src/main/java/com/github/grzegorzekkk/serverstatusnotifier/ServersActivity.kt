@@ -18,7 +18,8 @@ import com.github.grzegorzekkk.serverstatusnotifier.R.id.action_about
 import com.github.grzegorzekkk.serverstatusnotifier.R.id.action_settings
 import com.github.grzegorzekkk.serverstatusnotifier.R.layout.activity_servers
 import com.github.grzegorzekkk.serverstatusnotifier.R.menu.menu_servers
-import com.github.grzegorzekkk.serverstatusnotifier.database.SrvConnDetailsDbHelper
+import com.github.grzegorzekkk.serverstatusnotifier.client.AppSettings
+import com.github.grzegorzekkk.serverstatusnotifier.database.AppDbHelper
 import com.github.grzegorzekkk.serverstatusnotifier.scheduler.ServerAvailabilityChecker
 import com.github.grzegorzekkk.serverstatusnotifier.serverdetails.ServerDetailsActivity
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.ServerStatusAdapter
@@ -30,6 +31,7 @@ import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.AddNewServe
 import com.github.grzegorzekkk.serverstatusnotifier.serverslist.task.LoadSavedServersTask
 import com.github.grzegorzekkk.serverstatusnotifier.serverstatusnotifiermodel.ServerDetails
 import kotlinx.android.synthetic.main.activity_servers.*
+import java.util.*
 
 
 class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddListener, DeleteServerDialog.OnServerDeleteListener {
@@ -37,7 +39,7 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
     private lateinit var serverStatusAdapter: ServerStatusAdapter
     private lateinit var mJobScheduler: JobScheduler
     private lateinit var progressBarHandler: ProgressBarHandler
-    private val dbHelper = SrvConnDetailsDbHelper(this)
+    private val dbHelper = AppDbHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +62,8 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
         serverItemRecyclerView.adapter = serverStatusAdapter
 
         val dbServersList = dbHelper.fetchServersFromDb()
+        initAppUuid()
+
         val loadTask = LoadSavedServersTask(serversViewModel)
         loadTask.progressBar = progressBarHandler
         loadTask.execute(dbServersList)
@@ -164,6 +168,18 @@ class ServersActivity : AppCompatActivity(), AddNewServerTask.OnNewServerAddList
 
         if (mJobScheduler.schedule(builder.build()) <= 0) {
             //If something goes wrong
+        }
+    }
+
+    private fun initAppUuid() {
+        val appUuid = dbHelper.fetchAppUuid()
+
+        if (appUuid == null) {
+            val generatedUuid = UUID.randomUUID()
+            dbHelper.saveAppUuid(generatedUuid)
+            AppSettings.uuid = generatedUuid
+        } else {
+            AppSettings.uuid = appUuid
         }
     }
 
